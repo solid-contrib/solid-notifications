@@ -16,7 +16,7 @@
     "prepublish": "npm test && npm run build",
     "standard": "standard *.js src/*.js",
     "tape": "tape test/unit/*.js",
-    "test": "npm run standard && npm run tape"
+    "test": "npm run standard && npm run build && npm run tape"
   },
   "repository": {
     "type": "git",
