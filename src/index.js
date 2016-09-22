@@ -4,6 +4,8 @@ const DEFAULT_CONTENT_TYPE = 'application/ld+json'
 const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
 
 /**
+ * Resolves to the LDN Inbox URI for a given resource.
+ * @see https://www.w3.org/TR/ldn/#discovery
  * @param uri {string} Resource uri
  * @param webClient {SolidWebClient}
  * @param [resource] {SolidResponse} Optional resource (passed in if you already
@@ -35,6 +37,39 @@ export function discoverInboxUri (uri, webClient, resource) {
       } else {
         return Promise.reject(new Error('No inbox uri found for resource.'))
       }
+    })
+}
+
+/**
+ * Resolves to a list of uris for notifications that reside in the inbox of a
+ * given resource. If the optional `inboxUri` is not passed in, also performs
+ * LDN inbox discovery.
+ * @method list
+ * @param resourceUri {string}
+ * @param options {Object} Options hashmap
+ * @param options.webClient {SolidWebClient}
+ * @param [options.inboxUri] {string}
+ * @throws {Error} Rejects with an error if the resource has no inbox uri.
+ * @return {Promise<Array<string>>}
+ */
+export function list (resourceUri, options) {
+  let webClient = options.webClient
+  if (!webClient) {
+    return Promise.reject(new Error('Web client instance is required'))
+  }
+  return Promise.resolve()
+    .then(() => {
+      if (options.inboxUri) {
+        return options.inboxUri
+      } else {
+        return discoverInboxUri(resourceUri, webClient)
+      }
+    })
+    .then(inboxUri => {
+      return webClient.get(inboxUri)
+    })
+    .then(container => {
+      return Object.keys(container.resources)
     })
 }
 
