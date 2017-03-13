@@ -1,6 +1,7 @@
 'use strict'
 
 const DEFAULT_CONTENT_TYPE = 'application/ld+json'
+const DEFAULT_ACCEPT = 'application/ld+json;q=0.9,text/turtle;q=0.8'
 const INBOX_LINK_REL = 'http://www.w3.org/ns/ldp#inbox'
 
 /**
@@ -19,7 +20,10 @@ export function discoverInboxUri (uri, webClient, resource) {
       if (resource) {
         return resource
       } else {
-        return webClient.get(uri)
+        let options = {
+          headers: { 'Accept': DEFAULT_ACCEPT }
+        }
+        return webClient.get(uri, options)
       }
     })
     .then(resource => {
@@ -66,7 +70,10 @@ export function list (resourceUri, options) {
       }
     })
     .then(inboxUri => {
-      return webClient.get(inboxUri)
+      let options = {
+        headers: { 'Accept': DEFAULT_ACCEPT }
+      }
+      return webClient.get(inboxUri, options)
     })
     .then(container => {
       return Object.keys(container.resources)
